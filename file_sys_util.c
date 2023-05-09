@@ -61,10 +61,10 @@ inode *path_to_node(char *pathname, path_type type) {
   log_debug("path_to_node", log_formate_string);
 
   inode *node = pathname[0] == '/' ? root : cwd;
-  if (dirname[0] == '\0') {
-    log_debug("path_to_node", "dirname is empty");
-    return node;
-  }
+  // if (dirname[0] == '\0') {
+  //   log_debug("path_to_node", "dirname is empty");
+  //   return node;
+  // }
   for (int i = 0; i < num_tokens; i++) {
     if (node->child == NULL) {
       asprintf(&log_formate_string, "%s does not exist(1)", pathname);
@@ -84,7 +84,7 @@ inode *path_to_node(char *pathname, path_type type) {
       return NULL;
     }
   }
-  asprintf(&log_formate_string, "Found node: %s\n", node->name);
+  asprintf(&log_formate_string, "Found node: %s", node->name);
   log_debug("path_to_node", log_formate_string);
   log_debug("path_to_node", "end of path_to_node function");
   return node;
