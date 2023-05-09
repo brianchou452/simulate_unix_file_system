@@ -1,0 +1,32 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc 建置使用中檔案",
+            "command": "/opt/homebrew/bin/gcc-12",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "-Wall",
+                "-Wextra",
+                "-Wpedantic",
+                "${workspaceFolder}/*.c",
+                //"${file}",
+                "-o",
+                "${workspaceFolder}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "偵錯工具產生的工作。",
+        }
+    ],
+    "version": "2.0.0"
+}
