@@ -1,4 +1,2 @@
 /.DS_Store
-/file_sys.dSYM
-/file_sys_util.dSYM
-/main.dSYM
+/*.dSYM

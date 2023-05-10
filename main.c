@@ -27,7 +27,7 @@ int main(void) {
   int id;
   initialize();
   printf("Enter menu for help menu\n");
-  printf("Command : ");
+  printf("%s > ", cwd->name);
   while (1) {
     fgets(line, 128, stdin);
     command[0] = pathname[0] = 0;
@@ -43,7 +43,7 @@ int main(void) {
 
       printFileTree(root, 0);
 
-      printf("Command : ");
+      printf("%s > ", cwd->name);
     }
   }
   return 0;

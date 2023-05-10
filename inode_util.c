@@ -25,11 +25,35 @@ inode *createNode(inode *parent, char *name, char type) {
   node->parent = parent;
   node->child = NULL;
   node->sibling = NULL;
+
+  if (parent->child == NULL) {
+    parent->child = node;
+  } else {
+    inode *temp = parent->child;
+    while (temp->sibling != NULL) {
+      temp = temp->sibling;
+    }
+    temp->sibling = node;
+  }
+
   return node;
 }
 
+void removeNode(inode *parent, inode *node) {
+  if (parent->child == node) {
+    parent->child = node->sibling;
+  } else {
+    inode *temp = parent->child;
+    while (temp->sibling != node) {
+      temp = temp->sibling;
+    }
+    temp->sibling = node->sibling;
+  }
+  free(node);
+}
+
 void printFileTree(inode *node, int depth) {
-  // printf("printFileTree function\n");
+  printf("\033[0;32;34m");
   if (node == NULL) return;
   for (int i = 0; i < depth; i++) {
     printf("   ");
@@ -37,4 +61,5 @@ void printFileTree(inode *node, int depth) {
   printf("├─ %c: %s\n", node->type, node->name);
   printFileTree(node->child, depth + 1);
   printFileTree(node->sibling, depth);
+  printf("\033[0m");
 }
