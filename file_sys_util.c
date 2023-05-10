@@ -5,17 +5,9 @@
 #include "file_sys.h"
 #include "inode.h"
 #include "inode_util.h"
+#include "logger.h"
 
 int num_tokens = 0;
-char *log_formate_string;
-
-void log_debug(char *function_name, char *msg) {
-  printf("\033[0;32;34mDEBUG (%s): %s\033[0m\n", function_name, msg);
-}
-
-void log_error(char *function_name, char *msg) {
-  printf("\033[0;32;31mERROR (%s): %s\033[0m\n", function_name, msg);
-}
 
 int tokenize(char *pathname) {
   char path_tmp[64];
@@ -51,7 +43,6 @@ int tokenize(char *pathname) {
 }
 
 inode *path_to_node(char *pathname, path_type type) {
-  // TODO: 完成 .. and .
   // log_debug("path_to_node", "start path_to_node function");
   int num_tokens = tokenize(pathname);
   if (type == Parent_dir) {
@@ -61,13 +52,16 @@ inode *path_to_node(char *pathname, path_type type) {
   log_debug("path_to_node", log_formate_string);
 
   inode *node = pathname[0] == '/' ? root : cwd;
-  // if (dirname[0] == '\0') {
-  //   log_debug("path_to_node", "dirname is empty");
-  //   return node;
-  // }
+
   for (int i = 0; i < num_tokens; i++) {
+    if (strcmp(path_tokens[i], ".") == 0) {
+      continue;
+    } else if (strcmp(path_tokens[i], "..") == 0) {
+      node = node->parent;
+      continue;
+    }
     if (node->child == NULL) {
-      asprintf(&log_formate_string, "%s does not exist(1)", pathname);
+      asprintf(&log_formate_string, "%s does not exist(code:1)", pathname);
       log_error("path_to_node", log_formate_string);
       return NULL;
     }
@@ -79,7 +73,7 @@ inode *path_to_node(char *pathname, path_type type) {
       node = node->sibling;
     }
     if (node == NULL) {
-      asprintf(&log_formate_string, "%s does not exist(2)", pathname);
+      asprintf(&log_formate_string, "%s does not exist(code:2)", pathname);
       log_error("path_to_node", log_formate_string);
       return NULL;
     }

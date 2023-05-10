@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "inode.h"
+#include "logger.h"
 
 inode *root, *cwd;  // root and CWD pointers
 
@@ -31,6 +32,11 @@ inode *createNode(inode *parent, char *name, char type) {
   } else {
     inode *temp = parent->child;
     while (temp->sibling != NULL) {
+      if (strcmp(temp->name, name) == 0) {
+        asprintf(&log_formate_string, "%s already exists", name);
+        log_error("createNode", log_formate_string);
+        return NULL;
+      }
       temp = temp->sibling;
     }
     temp->sibling = node;
