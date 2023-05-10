@@ -135,7 +135,6 @@ int rm(char *pathname) {
 }
 
 int save() {
-  printf("save function \n");
   printf("Enter the name of the file to save to: ");
   char filename[MAX_PATHNAME_LENGTH];
   scanf("%s", filename);
@@ -150,11 +149,28 @@ int save() {
 }
 
 int reload(char *pathname) {
-  printf("reload function %s\n", pathname);
+  if (pathname[0] == '\0') {
+    printf("Enter the name of the file to load from: ");
+    scanf("%s", pathname);
+  }
+
+  FILE *fp = fopen(pathname, "r");
+  if (fp == NULL) {
+    printf("failed to open file %s\n", pathname);
+    return -1;
+  }
+  load_from_file(fp);
+  fclose(fp);
+
   return 0;
 }
 
 int quit() {
-  printf("quit function\n");
-  return 0;
+  printf("save before quit? (y/n): ");
+  char c;
+  scanf("%c", &c);
+  if (c == 'y') {
+    save();
+  }
+  return 1;
 }

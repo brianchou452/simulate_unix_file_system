@@ -39,6 +39,13 @@ inode *createNode(inode *parent, char *name, char type) {
       }
       temp = temp->sibling;
     }
+    // 如果沒有進入while loop，
+    // 就要檢查最後一個node的名字是否與要新增的node名字相同
+    if (strcmp(temp->name, name) == 0) {
+      asprintf(&log_formate_string, "%s already exists", name);
+      log_error("createNode", log_formate_string);
+      return NULL;
+    }
     temp->sibling = node;
   }
 

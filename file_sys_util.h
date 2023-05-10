@@ -12,4 +12,6 @@ extern char *node_to_path(inode *node);
 
 extern void save_to_file(inode *node, FILE *fp);
 
+extern void load_from_file(FILE *fp);
+
 #endif

@@ -115,3 +115,22 @@ void save_to_file(inode *node, FILE *fp) {
   save_to_file(node->child, fp);
   save_to_file(node->sibling, fp);
 }
+
+void load_from_file(FILE *fp) {
+  if (fp == NULL) {
+    return;
+  }
+  char line[MAX_PATHNAME_LENGTH];
+  while (fgets(line, MAX_PATHNAME_LENGTH, fp) != NULL) {
+    char type = line[0];
+    char *pathname = line + 2;
+    pathname[strlen(pathname) - 1] = '\0';
+    asprintf(&log_formate_string, "%c %s", type, pathname);
+    log_debug("load_from_file", log_formate_string);
+    if (type == 'D') {
+      mkdir(pathname);
+    } else if (type == 'F') {
+      create(pathname);
+    }
+  }
+}

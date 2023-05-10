@@ -28,7 +28,8 @@ int main(void) {
   initialize();
   printf("Enter menu for help menu\n");
   printf("%s > ", cwd->name);
-  while (1) {
+  int stop = 0;
+  while (!stop) {
     fgets(line, 128, stdin);
     command[0] = pathname[0] = 0;
     sscanf(line, "%s %s", command, pathname);
@@ -39,7 +40,7 @@ int main(void) {
         continue;
       }
 
-      fptr[id](pathname);
+      stop = fptr[id](pathname);
 
       printFileTree(root, 0);
 
