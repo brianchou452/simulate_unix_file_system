@@ -5,13 +5,13 @@
 #include "file_sys.h"
 #include "inode_util.h"
 
-extern inode *root, *cwd;       /* root and CWD pointers */
-char line[128];                 /* user input line */
-char command[16], pathname[64]; /* user inputs */
+extern inode *root, *cwd;                        /* root and CWD pointers */
+char line[128];                                  /* user input line */
+char command[16], pathname[MAX_PATHNAME_LENGTH]; /* user inputs */
 
-int (*fptr[])(char *) = {(int (*)())menu, mkdir,  rmdir, ls,   cd,
-                         (int (*)())pwd,  create, *rm,   save, reload,
-                         (int (*)())quit};
+int (*fptr[])(char *) = {
+    (int (*)())menu, mkdir,  rmdir,          ls, cd, (int (*)())pwd, create, rm,
+    (int (*)())save, reload, (int (*)())quit};
 
 int findCmd(char *command) {
   char *cmd[] = {"menu",   "mkdir", "rmdir", "ls",     "cd",  "pwd",

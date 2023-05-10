@@ -6,8 +6,9 @@
 #include "inode_util.h"
 #include "logger.h"
 
-char path_tokens[64][64];
-char dirname[64], basename[64]; /* string holders */
+char path_tokens[MAX_PATHNAME_LENGTH][MAX_PATHNAME_LENGTH];
+char dirname[MAX_PATHNAME_LENGTH],
+    basename[MAX_PATHNAME_LENGTH]; /* string holders */
 
 int menu() {
   printf("menu function\n");
@@ -96,19 +97,7 @@ int cd(char *pathname) {
 
 int pwd() {
   printf("pwd function\n");
-  char path[64][64];
-  int i = 0;
-  inode *node = cwd;
-  while (node != root) {
-    strcpy(path[i], node->name);
-    node = node->parent;
-    i++;
-  }
-  printf("/");
-  for (int j = i - 1; j >= 0; j--) {
-    printf("%s/", path[j]);
-  }
-  printf("\n");
+  printf("%s\n", node_to_path(cwd));
   return 0;
 }
 
@@ -145,8 +134,18 @@ int rm(char *pathname) {
   return 0;
 }
 
-int save(char *pathname) {
-  printf("save function %s\n", pathname);
+int save() {
+  printf("save function \n");
+  printf("Enter the name of the file to save to: ");
+  char filename[MAX_PATHNAME_LENGTH];
+  scanf("%s", filename);
+  FILE *fp = fopen(filename, "w");
+  if (fp == NULL) {
+    printf("failed to open file %s\n", filename);
+    return -1;
+  }
+  save_to_file(root->child, fp);
+  fclose(fp);
   return 0;
 }
 

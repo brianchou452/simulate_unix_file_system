@@ -10,7 +10,7 @@
 int num_tokens = 0;
 
 int tokenize(char *pathname) {
-  char path_tmp[64];
+  char path_tmp[MAX_PATHNAME_LENGTH];
   strcpy(path_tmp, pathname);
   char *token;
   token = strtok(path_tmp, "/");
@@ -82,4 +82,36 @@ inode *path_to_node(char *pathname, path_type type) {
   log_debug("path_to_node", log_formate_string);
   log_debug("path_to_node", "end of path_to_node function");
   return node;
+}
+
+char *node_to_path(inode *node) {
+  char *path = malloc(sizeof(char) * MAX_PATHNAME_LENGTH);
+  char path_tokens[MAX_PATHNAME_LENGTH][MAX_PATHNAME_LENGTH];
+  int i = 0;
+  while (node != root) {
+    strcpy(path_tokens[i], node->name);
+    node = node->parent;
+    i++;
+  }
+  strcat(path, "/");
+  for (int j = i - 1; j >= 0; j--) {
+    strcat(path, path_tokens[j]);
+    if (j != 0) {
+      strcat(path, "/");
+    }
+  }
+  return path;
+}
+
+void save_to_file(inode *node, FILE *fp) {
+  if (node == NULL || fp == NULL) {
+    return;
+  }
+
+  asprintf(&log_formate_string, "%c %s", node->type, node_to_path(node));
+  log_debug("save_to_file", log_formate_string);
+
+  fprintf(fp, "%c %s\n", node->type, node_to_path(node));
+  save_to_file(node->child, fp);
+  save_to_file(node->sibling, fp);
 }
