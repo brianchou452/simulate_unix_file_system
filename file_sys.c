@@ -7,11 +7,20 @@
 #include "logger.h"
 
 char path_tokens[MAX_PATHNAME_LENGTH][MAX_PATHNAME_LENGTH];
-char dirname[MAX_PATHNAME_LENGTH],
-    basename[MAX_PATHNAME_LENGTH]; /* string holders */
+char dirname[MAX_PATHNAME_LENGTH], basename[MAX_PATHNAME_LENGTH];
 
 int menu() {
-  printf("menu function\n");
+  printf("mkdir rmdir ls cd pwd create rm save reload quit\n");
+  printf("mkdir:\t make directory\n");
+  printf("rmdir:\t remove directory\n");
+  printf("ls:\t list directory\n");
+  printf("cd:\t change directory\n");
+  printf("pwd:\t print working directory\n");
+  printf("create:\t create file\n");
+  printf("rm:\t remove file\n");
+  printf("save:\t save file system tree\n");
+  printf("reload:\t reload file system tree\n");
+  printf("quit:\t save and quit\n");
   return 0;
 }
 
@@ -19,8 +28,10 @@ int mkdir(char *pathname) {
   log_debug("mkdir", "start mkdir function");
   inode *parent = path_to_node(pathname, Parent_dir);
   if (parent == NULL) {
-    printf("mkdir: cannot create directory '%s': No such file or directory\n",
-           pathname);
+    asprintf(&log_formate_string,
+             "failed to create directory '%s': No such file or directory",
+             pathname);
+    log_error("mkdir", log_formate_string);
     return -1;
   }
   createNode(parent, basename, 'D');
@@ -29,8 +40,12 @@ int mkdir(char *pathname) {
 }
 
 int rmdir(char *pathname) {
-  // TODO: 不能移除root
-  printf("rmdir function %s\n", pathname);
+  if (pathname[0] == '/' && pathname[1] == '\0') {
+    asprintf(&log_formate_string, "failed to remove '%s': Is a root directory",
+             pathname);
+    log_error("rmdir", log_formate_string);
+    return -1;
+  }
   inode *node = path_to_node(pathname, Dir);
   if (node == NULL) {
     asprintf(&log_formate_string,
@@ -38,6 +53,7 @@ int rmdir(char *pathname) {
     log_error("rmdir", log_formate_string);
     return -1;
   }
+
   if (node->child != NULL) {
     asprintf(&log_formate_string, "failed to remove '%s': Directory not empty",
              pathname);
@@ -79,7 +95,6 @@ int ls(char *pathname) {
 }
 
 int cd(char *pathname) {
-  printf("cd function %s\n", pathname);
   inode *node = path_to_node(pathname, Dir);
   if (node == NULL) {
     asprintf(&log_formate_string, "%s: No such file or directory", pathname);
@@ -96,7 +111,6 @@ int cd(char *pathname) {
 }
 
 int pwd() {
-  printf("pwd function\n");
   printf("%s\n", node_to_path(cwd));
   return 0;
 }
@@ -115,6 +129,12 @@ int create(char *pathname) {
 }
 
 int rm(char *pathname) {
+  if (pathname[0] == '/' && pathname[1] == '\0') {
+    asprintf(&log_formate_string, "failed to remove '%s': Is a root directory",
+             pathname);
+    log_error("rm", log_formate_string);
+    return -1;
+  }
   inode *node = path_to_node(pathname, Dir);
   if (node == NULL) {
     asprintf(&log_formate_string,
@@ -134,10 +154,13 @@ int rm(char *pathname) {
   return 0;
 }
 
-int save() {
-  printf("Enter the name of the file to save to: ");
+int save(char *pathname) {
   char filename[MAX_PATHNAME_LENGTH];
-  scanf("%s", filename);
+  strcpy(filename, pathname);
+  if (filename[0] == '\0') {
+    printf("Enter the name of the file to save to: ");
+    scanf("%s", filename);
+  }
   FILE *fp = fopen(filename, "w");
   if (fp == NULL) {
     printf("failed to open file %s\n", filename);
@@ -170,7 +193,7 @@ int quit() {
   char c;
   scanf("%c", &c);
   if (c == 'y') {
-    save();
+    save("\0");
   }
   return 1;
 }

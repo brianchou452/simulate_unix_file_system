@@ -17,11 +17,13 @@ int tokenize(char *pathname) {
   char *last_token = token;
   int i = 0;
   while (token != NULL) {
-    // printf("%s\n", token);
     last_token = token;
     strcpy(path_tokens[i], token);
     token = strtok(NULL, "/");
     i++;
+  }
+  if (i == 0) {
+    return 0;  // root 的特殊判斷
   }
   strcpy(basename, last_token);
 
@@ -43,7 +45,12 @@ int tokenize(char *pathname) {
 }
 
 inode *path_to_node(char *pathname, path_type type) {
-  // log_debug("path_to_node", "start path_to_node function");
+  log_debug("path_to_node", "start path_to_node function");
+  if (pathname == NULL || strlen(pathname) == 0) {
+    asprintf(&log_formate_string, "pathname is NULL or empty");
+    log_error("path_to_node", log_formate_string);
+    return NULL;
+  }
   int num_tokens = tokenize(pathname);
   if (type == Parent_dir) {
     num_tokens--;
